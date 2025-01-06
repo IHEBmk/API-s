@@ -144,10 +144,12 @@ def Get_Reciepes_By_Exact_ingredients(ingridients):
             ingridients_disct['quantity']=i.split('_')[1]
             ingridientts_list2.append(ingridients_disct)
     ingridients_formated=[]
-    
-    for i in ingridientts_list2:
-            ingridients_formated.append(i['ingridient'].to_string())
-    response=supabase.from_('Reciepes').select('*').eq('ingridients', ingridients_formated).execute()
+    sorted_list = sorted(ingridientts_list2, key=lambda x: x['ingridient'], reverse=True)
+    for i in sorted_list:
+            ingridients_formated.append(i['ingridient'])
+    ingridients_array = "{" + ",".join(ingridients_formated) + "}"
+        
+    response=supabase.from_('Reciepes').select('*').eq('ingridients', ingridients_array).execute()
     
     if response:
             return jsonify({
@@ -181,8 +183,9 @@ def Get_Reciepes_By_Subset_ingredients(ingridients):
             ingridientts_list2.append(ingridients_disct)
     ingridients_formated=[]
     
+    
     for i in ingridientts_list2:
-            ingridients_formated.append(i['ingridient'].to_string())
+            ingridients_formated.append(i['ingridient'])
     response=supabase.from_('Reciepes').select('*').contains('ingridients', ingridients_formated).execute()
     
     if response:
@@ -208,6 +211,7 @@ def Get_Reciepes_By_Exact_ingredients_and_quantity(ingridients):
     # if user:
     
     ingridients = unquote(ingridients)
+    print(ingridients)
     ingridientts_list=ingridients.split(',')
     ingridientts_list2=[]
     for i in ingridientts_list:
@@ -217,11 +221,18 @@ def Get_Reciepes_By_Exact_ingredients_and_quantity(ingridients):
             ingridientts_list2.append(ingridients_disct)
     ingridients_formated=[]
     quantity_formated=[]
-    
-    for i in ingridientts_list2:
-            quantity_formated.append(i['quantity'].to_string())
-            ingridients_formated.append(i['ingridient'].to_string())
-    response=supabase.from_('Reciepes').select('*').eq('ingridients', ingridients_formated).eq('quantity', quantity_formated).execute() 
+    sorted_list = sorted(ingridientts_list2, key=lambda x: x['ingridient'], reverse=True)
+    for i in sorted_list:
+            quantity_formated.append(i['quantity'])
+            ingridients_formated.append(i['ingridient'])
+    print(ingridients_formated)
+    print(quantity_formated)
+    ingridients_array = "{" + ",".join(ingridients_formated) + "}"
+    quantity_array = "{" + ",".join(quantity_formated) + "}"
+    response = supabase.from_('Reciepes').select('*')\
+        .eq('ingridients', ingridients_array)\
+        .eq('quantity', quantity_array)\
+        .execute()
     
     if response:
             return jsonify({
