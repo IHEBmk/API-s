@@ -106,7 +106,7 @@ def Get_Reciepes_By_Name(name,limit):
     supabase=SupabaseClientSingleton()
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
-    name='دجاج'
+
     if(limit==1):
             response=supabase.from_('Reciepes').select('id,title').like('title', f'%{name}%').limit(10).execute()
     else:
