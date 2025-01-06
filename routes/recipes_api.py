@@ -107,9 +107,9 @@ def Get_Reciepes_By_Name(name,limit):
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
     if(limit==1):
-            response=supabase.from_('Reciepes').select('id,title').like('title', '%$name%').limit(10).execute()
+            response=supabase.from_('Reciepes').select('id,title').like('title', name).limit(10).execute()
     else:
-            response=supabase.from_('Reciepes').select('*').like('title', '%$name%').execute()
+            response=supabase.from_('Reciepes').select('*').like('title', name).execute()
     
     if response:
             return jsonify({
