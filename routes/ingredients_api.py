@@ -19,6 +19,7 @@ def Search_Ingridients(name):
     
     if response:
             return jsonify({
+                
             "ingridients": response.data,
      }), 201
     else:
