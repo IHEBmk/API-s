@@ -1,6 +1,7 @@
 
 
 
+from urllib.parse import unquote
 from flask import Blueprint, Flask, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
@@ -15,6 +16,7 @@ def Search_Ingridients(name):
     supabase=SupabaseClientSingleton()
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
+    name = unquote(name)
     response=supabase.from_('Ingridients').select('*').like('ingridient', f'%{name}%').execute()
     
     if response:

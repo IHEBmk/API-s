@@ -171,7 +171,7 @@ def Get_Reciepes_By_Subset_ingredients(ingridients):
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
     
-    
+    ingridients = unquote(ingridients)
     ingridientts_list=ingridients.split(',')
     ingridientts_list2=[]
     for i in ingridientts_list:
@@ -207,7 +207,7 @@ def Get_Reciepes_By_Exact_ingredients_and_quantity(ingridients):
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
     
-    
+    ingridients = unquote(ingridients)
     ingridientts_list=ingridients.split(',')
     ingridientts_list2=[]
     for i in ingridientts_list:
