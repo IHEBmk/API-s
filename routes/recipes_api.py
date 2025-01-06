@@ -136,18 +136,11 @@ def Get_Reciepes_By_Exact_ingredients(ingridients):
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
     ingridients = unquote(ingridients)
-    ingridientts_list=ingridients.split(',')
-    ingridientts_list2=[]
-    for i in ingridientts_list:
-            ingridients_disct={}
-            ingridients_disct['ingridient']=i.split('_')[0]
-            ingridients_disct['quantity']=i.split('_')[1]
-            ingridientts_list2.append(ingridients_disct)
-    ingridients_formated=[]
-    sorted_list = sorted(ingridientts_list2, key=lambda x: x['ingridient'], reverse=True)
-    for i in sorted_list:
-            ingridients_formated.append(i['ingridient'])
-    ingridients_array = "{" + ",".join(ingridients_formated) + "}"
+    ingridientts_list2=ingridients.split(',')
+
+    sorted_list = sorted(ingridientts_list2,reverse=True)
+
+    ingridients_array = "{" + ",".join(sorted_list) + "}"
         
     response=supabase.from_('Reciepes').select('*').eq('ingridients', ingridients_array).execute()
     
@@ -174,19 +167,13 @@ def Get_Reciepes_By_Subset_ingredients(ingridients):
     # if user:
     
     ingridients = unquote(ingridients)
-    ingridientts_list=ingridients.split(',')
-    ingridientts_list2=[]
-    for i in ingridientts_list:
-            ingridients_disct={}
-            ingridients_disct['ingridient']=i.split('_')[0]
-            ingridients_disct['quantity']=i.split('_')[1]
-            ingridientts_list2.append(ingridients_disct)
+    ingridientts_list2=ingridients.split(',')
+    
     ingridients_formated=[]
     
     
-    for i in ingridientts_list2:
-            ingridients_formated.append(i['ingridient'])
-    response=supabase.from_('Reciepes').select('*').contains('ingridients', ingridients_formated).execute()
+
+    response=supabase.from_('Reciepes').select('*').contains('ingridients', ingridientts_list2).execute()
     
     if response:
             return jsonify({
