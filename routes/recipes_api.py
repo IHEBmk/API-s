@@ -16,7 +16,7 @@ def Get_Dish(id):
     # if user:
     response=supabase.from_('Reciepes').select('*').eq('id', id).limit(1).single().execute()
     
-    if response.data:
+    if response:
             return jsonify({
             "dish": response.data,
      }), 201
@@ -39,7 +39,7 @@ def Get_Category_Reciepes(categoryId):
     # if user:
     response=supabase.from_('Reciepes').select('id,title,subtitle,time,rating,media').eq('category', categoryId).execute()
     
-    if response.data:
+    if response:
             return jsonify({
             "reciepes": response.data,
      }), 201
@@ -62,7 +62,7 @@ def Get_Dish_Media(id):
     # if user:
     response=supabase.from_('Media').select('*').eq('id',id).limit(1).single().execute()
     
-    if response.data:
+    if response:
             return jsonify({
             "media": response.data,
      }), 201
@@ -111,7 +111,7 @@ def Get_Reciepes_By_Name(name,limit):
     else:
             response=supabase.from_('Reciepes').select('*').like('title', '%$name%').execute()
     
-    if response.data:
+    if response:
             return jsonify({
             "reciepes": response.data,
      }), 201
@@ -145,7 +145,7 @@ def Get_Reciepes_By_Exact_ingredients(ingridients):
             ingridients_formated.append(i['ingridient'].to_string())
     response=supabase.from_('Reciepes').select('*').eq('ingridients', ingridients_formated).execute()
     
-    if response.data:
+    if response:
             return jsonify({
             "reciepes": response.data,
      }), 201
@@ -181,7 +181,7 @@ def Get_Reciepes_By_Subset_ingredients(ingridients):
             ingridients_formated.append(i['ingridient'].to_string())
     response=supabase.from_('Reciepes').select('*').contains('ingridients', ingridients_formated).execute()
     
-    if response.data:
+    if response:
             return jsonify({
             "reciepes": response.data,
      }), 201
@@ -219,7 +219,7 @@ def Get_Reciepes_By_Exact_ingredients_and_quantity(ingridients):
             ingridients_formated.append(i['ingridient'].to_string())
     response=supabase.from_('Reciepes').select('*').eq('ingridients', ingridients_formated).eq('quantity', quantity_formated).execute() 
     
-    if response.data:
+    if response:
             return jsonify({
             "reciepes": response.data,
      }), 201
