@@ -15,7 +15,7 @@ def Search_Ingridients(name):
     supabase=SupabaseClientSingleton()
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
-    response=supabase.from_('Ingridients').select('*').like('ingridient', '%$name%').execute()
+    response=supabase.from_('Ingridients').select('*').like('ingridient', f'%{name}%').execute()
     
     if response:
             return jsonify({

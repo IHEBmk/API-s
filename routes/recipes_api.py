@@ -115,7 +115,6 @@ def Get_Reciepes_By_Name(name,limit):
     if response:
             return jsonify({
                     
-        'name':name,
             "reciepes": response.data,
      }), 201
     else:
