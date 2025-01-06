@@ -1,4 +1,5 @@
 
+from urllib.parse import unquote
 from flask import Blueprint, Flask, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
@@ -106,7 +107,7 @@ def Get_Reciepes_By_Name(name,limit):
     supabase=SupabaseClientSingleton()
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
-
+    name = unquote(name)
     if(limit==1):
             response=supabase.from_('Reciepes').select('id,title').like('title', f'%{name}%').limit(10).execute()
     else:
@@ -134,6 +135,7 @@ def Get_Reciepes_By_Exact_ingredients(ingridients):
     supabase=SupabaseClientSingleton()
     # user=supabase.from_('User').select('*').eq('id', user_id)
     # if user:
+    ingridients = unquote(ingridients)
     ingridientts_list=ingridients.split(',')
     ingridientts_list2=[]
     for i in ingridientts_list:
