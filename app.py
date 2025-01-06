@@ -1,4 +1,4 @@
-from flask import Flask,app
+from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from routes.supabasehelper import SupabaseClientSingleton
