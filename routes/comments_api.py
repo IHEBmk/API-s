@@ -9,34 +9,46 @@ comments_blueprint = Blueprint('comments', __name__)
 @jwt_required()
 def insert_comment():
     data = request.get_json()
-    if not data or 'recipe_id' not in data or 'comment' not in data or 'rating' not in data:
+
+    # Validate required fields
+    required_fields = ['recipe_id', 'comment', 'rating']
+    if not data or not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
-    # Get the current user's email from the JWT token
+    # Get the current user's email from JWT token
     current_user_email = get_jwt_identity()
 
     # Fetch the username associated with the email
     supabase = SupabaseClientSingleton()
-    user_response = supabase.from_('user').select('username').eq('email', current_user_email).single().execute()
+    user_response = supabase.from_('user') \
+                            .select('username') \
+                            .eq('email', current_user_email) \
+                            .single() \
+                            .execute()
 
     if not user_response.data:
         return jsonify({"error": "User not found"}), 404
 
-    username = user_response.data['username']
+    username = user_response.data.get('username')
+    if not username:
+        return jsonify({"error": "Username not found"}), 404
 
     # Insert the comment with the username
-    comment_response = supabase.from_('comments').insert({
+    comment_data = {
         'recipe_id': data['recipe_id'],
-        'username': username,  # Use the fetched username
+        'username': username,
         'comment': data['comment'],
         'rating': data['rating'],
-        'date': datetime.utcnow().isoformat() 
-    }).execute()
+        'date': datetime.utcnow().isoformat()
+    }
 
-    if comment_response:
+    comment_response = supabase.from_('comments').insert(comment_data).execute()
+
+    if comment_response.data:
         return jsonify({"message": "Comment inserted successfully"}), 201
     else:
-        return jsonify({"error": "Error inserting comment"}), 400
+        error_message = comment_response.error.get('message') if comment_response.error else "Unknown error"
+        return jsonify({"error": f"Error inserting comment: {error_message}"}), 400
 
 # Get all comments for a specific recipe
 @comments_blueprint.route('/comments/recipe/<string:recipe_id>', methods=['GET'])
