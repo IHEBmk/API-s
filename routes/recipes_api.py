@@ -18,6 +18,7 @@ def Get_Dish(id):
     response=supabase.from_('Reciepes').select('*').eq('id', id).limit(1).single().execute()
     
     if response:
+            
             return jsonify({
             "dish": response.data,
      }), 201

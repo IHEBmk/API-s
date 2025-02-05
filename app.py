@@ -5,10 +5,17 @@ from routes.supabasehelper import SupabaseClientSingleton
 from routes.category_api import categories_blueprint
 from routes.ingredients_api import ingridients_blueprint
 from routes.recipes_api import reciepes_blueprint
+from routes.user_api import users_blueprint
+from routes.comments_api import comments_blueprint
+
 app = Flask(__name__)
 
-bcrypt=None
-# jwt = JWTManager(app)
+# JWT Configuration
+app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Replace with a secure secret key
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+
+# Initialize JWTManager
+jwt = JWTManager(app)
 
 
 
@@ -17,20 +24,10 @@ bcrypt=None
 app.register_blueprint(categories_blueprint, url_prefix='/api/categories')
 app.register_blueprint(ingridients_blueprint, url_prefix='/api/ingridients')
 app.register_blueprint(reciepes_blueprint, url_prefix='/api/recipes')
+app.register_blueprint(users_blueprint, url_prefix='/api/users')
+app.register_blueprint(comments_blueprint, url_prefix='/api/comments')
 
 
-
-
-# def create_app():
-#     app = Flask(__name__)
-
-    
-#     return app
-
-
-# @app.route('/')
-# def hello_world():
-#     return 'Hello, World!'
 
 
 if __name__ == "__main__":
