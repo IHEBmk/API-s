@@ -16,7 +16,7 @@ def get_all_users():
         return jsonify({"error": "Error fetching users"}), 400
 
 # Insert a new user
-@users_blueprint.route('/users', methods=['POST'])
+@users_blueprint.route('/users/insert', methods=['POST'])
 def insert_user():
     data = request.get_json()
     if not data:
