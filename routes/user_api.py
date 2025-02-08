@@ -131,3 +131,28 @@ def get_Favourites(user_id):
         return jsonify({"favourites": response.data}), 200
     else:
         return jsonify({"error": "User not found"}), 404
+
+
+
+
+
+@users_blueprint.route('/users/remove_favourites/<int:user_id>/<int:id>', methods=['GET'])
+def remove_Favourites(user_id):
+    supabase = SupabaseClientSingleton()
+    response = supabase.from_('Favourites').delete().eq('user_id', user_id).eq('reciepe_id', id).execute()
+    if response:
+        return jsonify({"message": "Favourite removed successfully"}), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
+    
+    
+    
+@users_blueprint.route('/users/add_favourites/<int:user_id>/<int:id>', methods=['GET'])
+def add_Favourites(user_id):
+    supabase = SupabaseClientSingleton()
+    response = supabase.from_('Favourites').insert({'user_id': user_id, 'reciepe_id': id}).execute()
+    if response:
+        return jsonify({"message": "Favourite added successfully"}), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
