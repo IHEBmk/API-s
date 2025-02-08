@@ -141,8 +141,8 @@ def remove_Favourites(user_id,id):
     supabase = SupabaseClientSingleton()
     response = supabase.from_('Favourites').delete().eq('user_id', user_id).eq('reciepe_id', id).execute()
     if response:
-        print(response)
-        return jsonify({"message": "Favourite removed successfully"}), 200
+
+        return jsonify({"message": "Favourite removed successfully","response":response}), 200
     else:
         return jsonify({"error": "User not found"}), 404
     
