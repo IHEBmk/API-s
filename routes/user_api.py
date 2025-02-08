@@ -126,7 +126,7 @@ def get_current_user():
 @users_blueprint.route('/users/get_favourites/<int:user_id>', methods=['GET'])
 def get_Favourites(user_id):
     supabase = SupabaseClientSingleton()
-    response = supabase.from_('Favourites').select('reciepe_id').eq('user_id', user_id).all().execute()
+    response = supabase.from_('Favourites').select('reciepe_id').eq('user_id', user_id).execute().all()
     if response:
         return jsonify({"favourites": response.data}), 200
     else:
