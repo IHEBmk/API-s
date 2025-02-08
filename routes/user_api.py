@@ -120,3 +120,14 @@ def get_current_user():
         return jsonify({"user": response.data}), 200
     else:
         return jsonify({"error": "User not found"}), 404
+    
+    
+    
+@users_blueprint.route('/users/get_favourites/<int:user_id>', methods=['GET'])
+def get_Favourites(user_id):
+    supabase = SupabaseClientSingleton()
+    response = supabase.from_('Favourites').select('reciepe_id').eq('user_id', user_id).all().execute()
+    if response:
+        return jsonify({"favourites": response.data}), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
