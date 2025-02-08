@@ -380,7 +380,14 @@ def add_recipe():
 def get_user_recipes(user_id):
     try:
         supabase = SupabaseClientSingleton()
-        response = supabase.from_("Reciepes").select("*").eq("user_id", user_id).execute()
+        
+        # Fetch user recipes along with media details
+        response = (
+            supabase.from_("Reciepes")
+            .select("*, Media(id, images)")
+            .eq("user_id", user_id)
+            .execute()
+        )
 
         if hasattr(response, 'error') and response.error:
             return jsonify({
@@ -394,10 +401,26 @@ def get_user_recipes(user_id):
                 "recipes": []
             }), 200
 
+        recipes = response.data
+
+        # Extract first image from the "images" field
+        for recipe in recipes:
+            if "Media" in recipe and recipe["Media"]:
+                try:
+                    images = json.loads(recipe["Media"]["images"])  # Convert string to JSON
+                    if isinstance(images, list) and len(images) > 0:
+                        recipe["image"] = images[0]  # First image
+                    else:
+                        recipe["image"] = None
+                except Exception:
+                    recipe["image"] = None
+            else:
+                recipe["image"] = None
+
         return jsonify({
             "message": "Recipes retrieved successfully",
-            "length": len(response.data),
-            "recipes": response.data
+            "length": len(recipes),
+            "recipes": recipes
         }), 200
 
     except Exception as e:
