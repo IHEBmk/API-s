@@ -157,3 +157,114 @@ def add_Favourites(user_id,id):
         return jsonify({"message": "Favourite added successfully"}), 200
     else:
         return jsonify({"error": "User not found"}), 404
+
+
+
+
+
+@users_blueprint.route('/update/<int:user_id>', methods=['PUT'])
+def update_user_info(user_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    supabase = SupabaseClientSingleton()
+    fields_to_update = {}
+    allowed_fields = ["full_name", "bio", "username"] 
+
+    # Update allowed text fields
+    for field in allowed_fields:
+        if field in data and isinstance(data[field], str):
+            fields_to_update[field] = data[field]
+
+    # Handle profile image upload
+    if "profile_img" in data and data["profile_img"]:
+        try:
+            # Validate Base64 string length before decoding
+            if len(data["profile_img"]) % 4 != 0:
+                return jsonify({"error": "Invalid base64 image data"}), 400
+
+            image_data = base64.b64decode(data["profile_img"])
+            image_filename = f"profile_images/{uuid.uuid4()}.jpg"
+
+            storage_response = supabase.storage.from_('ProfileImages').upload(image_filename, image_data, {
+                "content-type": "image/jpeg"
+            })
+
+            # Check for storage upload errors
+            if isinstance(storage_response, dict) and "error" in storage_response:
+                return jsonify({"error": f"Error uploading image: {storage_response['error']}"}), 500
+
+            image_url = supabase.storage.from_('ProfileImages').get_public_url(image_filename)
+            fields_to_update["profile_img"] = image_url
+        except Exception as e:
+            return jsonify({"error": f"Image processing error: {str(e)}"}), 500
+
+    if not fields_to_update:
+        return jsonify({"error": "No valid fields to update"}), 400
+
+    try:
+        response = supabase.from_('user').update(fields_to_update).eq('id', user_id).execute()
+
+        if not response:
+            return jsonify({"error": "Error updating user", "details": response["error"]}), 400
+
+        return jsonify({"message": "User updated successfully", "updated_data": fields_to_update}), 200
+    except Exception as e:
+        return jsonify({"error": f"Database update error: {str(e)}"}), 500
+    
+    
+
+@users_blueprint.route('/user_favorites/<user_id>', methods=['GET'])
+def get_user_favorites(user_id):
+    try:
+        supabase = SupabaseClientSingleton()
+
+        # Get favorite recipe IDs for the user
+        fav_response = supabase.from_("Favourites").select("reciepe_id").eq("user_id", user_id).execute()
+
+        if hasattr(fav_response, 'error') and fav_response.error:
+            return jsonify({
+                "error": "Database error",
+                "details": fav_response.error
+            }), 400
+
+        favorite_recipe_ids = [fav["reciepe_id"] for fav in fav_response.data]
+
+        if not favorite_recipe_ids:
+            return jsonify({
+                "message": "No favorite recipes found for this user",
+                "recipes": []
+            }), 200
+
+        # Get details of the favorite recipes
+        recipes_response = supabase.from_("Reciepes").select("*").in_("id", favorite_recipe_ids).execute()
+
+        if hasattr(recipes_response, 'error') and recipes_response.error:
+            return jsonify({
+                "error": "Database error",
+                "details": recipes_response.error
+            }), 400
+
+        return jsonify({
+            "message": "Favorite recipes retrieved successfully",
+            "length": len(recipes_response.data),
+            "recipes": recipes_response.data
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": "Failed to retrieve favorite recipes",
+            "details": str(e),
+            "type": type(e).__name__
+        }), 500
+        
+@users_blueprint.route('getme/<int:id>', methods=['GET'])
+def get_user(id):
+    supabase = SupabaseClientSingleton()
+    response = supabase.from_('user').select('*').eq('id', id).execute()
+
+    if response.data:
+        return jsonify({"user": response.data}), 200
+    else:
+        return jsonify({"error": f"User not found with ID {id}"}), 404
