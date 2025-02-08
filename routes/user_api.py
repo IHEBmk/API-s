@@ -136,10 +136,10 @@ def get_Favourites(user_id):
 
 
 
-@users_blueprint.route('/users/remove_favourites/<int:user_id>/<int:id>', methods=['GET'])
-def remove_Favourites(user_id,id):
+@users_blueprint.route('/users/remove_favourites/<int:id>', methods=['GET'])
+def remove_Favourites(id):
     supabase = SupabaseClientSingleton()
-    response = supabase.from_('Favourites').delete().eq('user_id', user_id).eq('reciepe_id', id).execute()
+    response = supabase.from_('Favourites').delete().eq('id', id).execute()
     if response:
 
         return jsonify({"message": "Favourite removed successfully"}), 200
