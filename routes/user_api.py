@@ -137,7 +137,7 @@ def get_Favourites(user_id):
 
 
 @users_blueprint.route('/users/remove_favourites/<int:user_id>/<int:id>', methods=['GET'])
-def remove_Favourites(user_id):
+def remove_Favourites(user_id,id):
     supabase = SupabaseClientSingleton()
     response = supabase.from_('Favourites').delete().eq('user_id', user_id).eq('reciepe_id', id).execute()
     if response:
@@ -149,7 +149,7 @@ def remove_Favourites(user_id):
     
     
 @users_blueprint.route('/users/add_favourites/<int:user_id>/<int:id>', methods=['GET'])
-def add_Favourites(user_id):
+def add_Favourites(user_id,id):
     supabase = SupabaseClientSingleton()
     response = supabase.from_('Favourites').insert({'user_id': user_id, 'reciepe_id': id}).execute()
     if response:
